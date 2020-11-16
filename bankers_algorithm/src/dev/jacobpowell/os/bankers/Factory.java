@@ -6,7 +6,8 @@ import java.util.*;
 public class Factory {
     public static void main(String[] args) {
         String filename = "./src/dev/jacobpowell/os/bankers/infile.txt";
-        Thread[] workers = new Thread[Customer.COUNT];      // the customers
+        Thread[] workers = new Thread[Customer.COUNT];
+        int threadNum = 0;
         // read in values and initialize the matrices
         // to do
         // ...
@@ -24,8 +25,22 @@ public class Factory {
             int[] maxDemand = new int[nResources];
             int[] allocated = new int[nResources];
             
-        	int threadNum = 0;
-        	while(threadNum < Customer.COUNT) {
+            // As long as there is a new line to read, let's digest it
+        	while(infileScanner.hasNextLine()) {
+        		String newResourceLine = infileScanner.nextLine();
+        		if(newResourceLine.length() == 0) { continue; }
+        		String[] newResourcePieces = newResourceLine.split(",");
+        		
+        		// Go through read resource and add it to our allocation section
+        		for(int i = 0; i < newResourcePieces.length/2; i++) {
+        			allocated[i] = Integer.parseInt(newResourcePieces[i].trim());
+        		}
+        		
+        		// Go through read resource and add it to our max section
+        		for(int i = 0; i < newResourcePieces.length/2; i++) {
+        			maxDemand[i - nResources] = Integer.parseInt(newResourcePieces[i].trim());
+        		}
+        		
                 workers[threadNum] = new Thread(new Customer(threadNum, maxDemand, theBank));
 				theBank.addCustomer(threadNum, allocated, maxDemand);
                 ++threadNum;        //theBank.getCustomer(threadNum);
