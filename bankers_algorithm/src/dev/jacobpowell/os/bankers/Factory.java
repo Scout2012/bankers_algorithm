@@ -21,7 +21,7 @@ public class Factory {
         	Scanner readFileContent = new Scanner(infile);
         	
         	int threadNum = 0;
-        	while(threadNum < 10) {
+        	while(threadNum < Customer.COUNT) {
                 workers[threadNum] = new Thread(new Customer(threadNum, maxDemand, theBank));
 				theBank.addCustomer(threadNum, allocated, maxDemand);
                 ++threadNum;        //theBank.getCustomer(threadNum);
