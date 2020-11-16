@@ -63,6 +63,7 @@ public class BankImpl implements Bank {
     
     private boolean isSafeState (int threadNum, int[] request) {
     	int[] currAvail = new int[m];
+        System.arraycopy(available,0, currAvail, 0, m);
         int[][] currAlloc = new int[n][m];
         int[][] currNeed = new int[n][m];
         for (int i = 0; i < n; i++){
@@ -113,12 +114,51 @@ public class BankImpl implements Bank {
     
     // make request for resources. will block until request is satisfied safely
     public synchronized boolean requestResources(int threadNum, int[] request)  {
-        // todo
+    	for (int i = 0; i < m; ++i){
+            if (request[i] > need[threadNum][i]){
+                request[i] = need[threadNum][i];
+            }
+        }
+        System.out.print("#P"+ threadNum + " RQ:");
+        showVector(request, ", needs: ");
+        showVector(need[threadNum], ", available:");
+        showVector(available, "\n");
+        
+        for (int i = 0; i < m; ++i){
+            if (request[i] > available[i]){
+                System.out.println("--->DENIED");
+                return false;
+            }
+        }
+
+        if (isSafeState(threadNum, request)){
+            System.out.print("---> APPROVED, #P" + threadNum + " now at: ");
+            for (int i = 0; i < m; ++i){
+                available[i] -= request[i];
+                allocation[threadNum][i] += request[i];
+                need[threadNum][i] -= request[i];
+            }
+
+            showVector(allocation[threadNum], " available");
+            showVector(available, "\n");
+            showAllMatrices(allocation, maximum, need, "\n");
+
+            for (int i = 0; i < m; ++i){
+                if (need[threadNum][i] != 0){
+                    return false; // customer isn't finished yet
+                }
+            }
+            return true;  // customer finished, waiting to be released
+        }
     	
     	return false;
      }
     
     public synchronized void releaseResources(int threadNum, int[] release)  {
-        // todo
+        for (int i = 0; i < m; ++i){
+            available[i] += allocation[threadNum][i];
+            allocation[threadNum][i] = 0;
+        }
+        showVector(allocation[threadNum], "\n");
     }
 }
