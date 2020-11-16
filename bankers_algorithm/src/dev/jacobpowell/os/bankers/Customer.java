@@ -1,7 +1,7 @@
 package dev.jacobpowell.os.bankers;
 
 public class Customer implements Runnable {
-    public static final int COUNT = 5;    // number of threads
+    public static final int MAX_COUNT = 12;    // number of threads
     private int numOfResources;     // N different resources
     private int[] maxDemand;        // maximum this thread will demand
     private int customerNum;        // customer number

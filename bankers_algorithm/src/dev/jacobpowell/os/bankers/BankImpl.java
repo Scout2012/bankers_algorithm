@@ -25,12 +25,21 @@ public class BankImpl implements Bank {
     }
     
     public BankImpl(int[] resources) {      // create a new bank (with resources)
-        // todo
+        n = Customer.MAX_COUNT;
+        m = resources.length;
+        available = new int[m];
+        maximum = new int[n][m];
+        allocation = new int[n][m];
+        need = new int[n][m];
     }
     
     // invoked by a thread when it enters the system;  also records max demand
     public void addCustomer(int threadNum, int[] allocated, int[] maxDemand) {
-        // todo
+    	for (int i = 0; i < m; ++i){
+            allocation[threadNum][i] = allocated[i];
+            maximum[threadNum][i] = maxDemand[i];
+            need[threadNum][i] = maxDemand[i] - allocated[i];
+        }
     }
     
     // output state for each thread
