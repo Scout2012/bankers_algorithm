@@ -1,1 +1,1 @@
-# bankers_algorithm
+# Bankers Algorithm implemented for CPSC 351 project
