@@ -13,15 +13,29 @@ public class BankImpl implements Bank {
     
     
     private void showAllMatrices(int[][] alloc, int[][] max, int[][] need, String msg) { 
-        // todo
+        System.out.print("ALLOCATION MAXIMUM NEED\n");
+        for (int i = 0; i < n; ++i){
+            System.out.print(" ");
+            System.out.print("------- -------- --------\n");
+                showVector(alloc[i]," ");
+                showVector(max[i]," ");
+                showVector(need[i],"\n");
+        }
     }
  
     private void showMatrix(int[][] matrix, String title, String rowTitle) {
-        // todo
+    	 System.out.println(title);
+         for (int i = 0; i < n; ++i){
+             showVector(matrix[i], "");
+         }
     }
     
     private void showVector(int[] vect, String msg) {
-        // todo
+        System.out.print("[");
+        for (int i = 0; i < m; ++i){
+            System.out.print(Integer.toString(vect[i]) + ' ');
+        }
+        System.out.print("]" + msg);
     }
     
     public BankImpl(int[] resources) {      // create a new bank (with resources)
@@ -44,13 +58,57 @@ public class BankImpl implements Bank {
     
     // output state for each thread
     public void getState() {
-        // todo
+    	showAllMatrices(allocation, maximum, need, "");
     }
     
     private boolean isSafeState (int threadNum, int[] request) {
-        // todo -- actual banker's algorithm
-    	
-    	return false;
+    	int[] currAvail = new int[m];
+        int[][] currAlloc = new int[n][m];
+        int[][] currNeed = new int[n][m];
+        for (int i = 0; i < n; i++){
+            System.arraycopy(allocation[i], 0, currAlloc[i], 0, m);
+            System.arraycopy(need[i], 0, currNeed[i], 0, m);
+        }
+
+        boolean[] finish = new boolean[n];
+        Arrays.fill(finish, false);
+
+        // pretend we grant the request to customer threadNum
+        for (int i = 0; i < m; i++){
+            currAvail[i] -= request[i];
+            currAlloc[threadNum][i] += request[i];
+            currNeed[threadNum][i] -= request[i];
+        }
+
+        while (true) {
+            int index = -1;
+            for (int i = 0; i < n; i++) {
+                boolean hasEnoughResource = true;
+                for (int j = 0; j < m; ++j) {
+                    if (currNeed[i][j] > currAvail[j]) {
+                        hasEnoughResource = false;
+                        break;
+                    }
+                }
+                if (!finish[i] && hasEnoughResource) {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (index > -1){
+                for (int i = 0; i < m; i++){
+                    currAvail[i] += currAlloc[index][i];
+                    finish[index] = true;
+                }
+            }
+            else break;
+        }
+
+        for (int i = 0; i < n; i++){
+            if (!finish[i]) return false;
+        }
+        return true;
     }
     
     // make request for resources. will block until request is satisfied safely
