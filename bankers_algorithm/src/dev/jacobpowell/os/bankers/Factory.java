@@ -19,7 +19,7 @@ public class Factory {
         	
         	int nResources = resourcePieces.length;
             int[] resources = new int[nResources];
-            for (int i = 0; i < nResources; i++) { resources[i] = Integer.parseInt(args[i].trim()); }
+            for (int i = 0; i < nResources; i++) { resources[i] = Integer.parseInt(resourcePieces[i].trim()); }
             Bank theBank = new BankImpl(resources);
             int[] maxDemand = new int[nResources];
             int[] allocated = new int[nResources];
